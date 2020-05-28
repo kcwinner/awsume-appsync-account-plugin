@@ -1,11 +1,8 @@
 import requests
-import hashlib
-import hmac
 import argparse
 import json
 import os
 import sys
-import urllib
 import boto3
 
 from awsume.awsumepy import hookimpl, safe_print
@@ -212,19 +209,3 @@ def __parse_region_from_url(url):
     return None
 
 ### End Utility Functions ###
-
-### Signing Functions ###
-
-# Key derivation functions. See:
-# http://docs.aws.amazon.com/general/latest/gr/signature-v4-examples.html#signature-v4-examples-python
-def __sign(key, msg):
-    return hmac.new(key, msg.encode('utf-8'), hashlib.sha256).digest()
-
-def __getSignatureKey(key, dateStamp, regionName, serviceName):
-    kDate = __sign(('AWS4' + key).encode('utf-8'), dateStamp)
-    kRegion = __sign(kDate, regionName)
-    kService = __sign(kRegion, serviceName)
-    kSigning = __sign(kService, 'aws4_request')
-    return kSigning
-
-### End Signing Functions ###
